@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Add Student - SmartStudent</title>
+    <style>
+        /* Layout Styling */
+        body { display: flex; min-height: 100vh; background-color: #f4f7f6; margin: 0; font-family: sans-serif; }
+        
+        /* Sidebar Styles */
+        .sidebar { 
+            width: 240px; 
+            background-color: var(--teal); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            position: fixed; /* Keeps sidebar fixed while scrolling content */
+            height: 100vh;
+        }
+        .sidebar-header { padding: 20px; font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.1); }
+        
+        /* Menu takes up remaining space to push footer down */
+        .sidebar-menu { flex: 1; padding: 10px 0; }
+        .sidebar-menu a { display: block; padding: 12px 20px; color: white; text-decoration: none; transition: 0.3s; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-menu a.active { background: rgba(255,255,255,0.2); border-left: 4px solid var(--gold); }
+
+        /* LOGOUT BUTTON STYLING */
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn { 
+            display: block;
+            padding: 10px; 
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background-color: #e74c3c; /* Red hover effect */
+            border-color: #e74c3c;
+        }
+        
+        /* Main Content area */
+        .main-content { flex: 1; display: flex; flex-direction: column; margin-left: 240px; } /* Margin-left matches sidebar width */
+        .top-nav { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .content-container { padding: 30px; display: flex; flex-direction: column; align-items: center; }
+        .form-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 500px; }
+        
+        /* Form Groups */
+        .form-group { margin-bottom: 15px; width: 100%; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+
+        /* Specific Button Overrides */
+        .btn-register { background: var(--teal); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-register:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">SmartStudent</div>
+        
+        <div class="sidebar-menu">
+            <a href="admin_dashboard.html">🏠 Home</a>
+            <a href="Student_details.html">👥 Student Directory</a>
+            <a href="addStudent.html" class="active">➕ Add Student</a>
+            <a href="Subjectlist.html">📚 Subject List</a>
+            <a href="addSubject.html">📝 Add Subject</a>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="Hero.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <nav class="top-nav">
+            <span style="font-weight: bold; color: var(--teal);">Student Registration</span>
+            <a href="Student_details.html" class="btn" style="background: var(--gold); font-size: 0.8rem; border: none; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px;">View Directory</a>
+        </nav>
+
+        <div class="content-container">
+            <div class="form-card">
+                <h2 style="color: var(--teal); margin-top: 0;">Register New Student</h2>
+                <p style="color: #666; margin-bottom: 25px;">Provide the information below to create a student account.</p>
+                
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input id="n" placeholder="e.g. John Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label>Registration Number (Default Password)</label>
+                    <input id="r" placeholder="e.g. STU123">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input id="e" type="email" placeholder="john@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Age</label>
+                    <input id="a" type="number" placeholder="e.g. 20">
+                </div>
+                
+                <div class="form-group">
+                    <label>Course</label>
+                    <input id="c" placeholder="e.g. Computer Science">
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="g">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-register" style="width: 100%; margin-top: 20px; padding: 15px;" onclick="save()">
+                    Save & Register Student
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function save() {
+            const name = document.getElementById('n').value;
+            const regNum = document.getElementById('r').value;
+            const email = document.getElementById('e').value;
+            const age = document.getElementById('a').value;
+            const course = document.getElementById('c').value;
+            const gender = document.getElementById('g').value;
+
+            if (!name || !regNum) {
+                alert("Name and Registration Number are required!");
+                return;
+            }
+
+            const students = JSON.parse(localStorage.getItem('students') || "[]");
+            
+            students.push({
+                name: name,
+                regNum: regNum,
+                password: regNum, 
+                email: email,
+                age: age,
+                course: course,
+                gender: gender
+            });
+            
+            localStorage.setItem('students', JSON.stringify(students));
+            alert("Student Added Successfully!");
+            location.href = "Student_details.html";
+        }
+    </script>
+</body>
+</html>

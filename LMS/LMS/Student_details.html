@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Directory - SmartStudent</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Layout Styling */
+        body { display: flex; min-height: 100vh; background-color: #f4f7f6; margin: 0; font-family: sans-serif; }
+        
+        /* Sidebar Styles (Consistent across all pages) */
+        .sidebar { 
+            width: 240px; 
+            background-color: var(--teal); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            position: fixed; 
+            height: 100vh;
+        }
+        .sidebar-header { padding: 20px; font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.1); }
+        .sidebar-menu { flex: 1; padding: 10px 0; }
+        .sidebar-menu a { display: block; padding: 12px 20px; color: white; text-decoration: none; transition: 0.3s; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-menu a.active { background: rgba(255,255,255,0.2); border-left: 4px solid var(--gold); }
+        
+        /* Fixed Logout Section */
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn { 
+            display: block;
+            padding: 10px; 
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        /* Main Content area */
+        .main-content { flex: 1; display: flex; flex-direction: column; margin-left: 240px; }
+        .top-nav { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .content-container { padding: 30px; }
+        .table-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #f9f9f9; color: var(--asphalt); text-align: left; padding: 12px; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+        
+        /* Form Groups for Modal */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #555; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
+        .modal-content { background-color: white; margin: 5% auto; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+        /* Specific Button Colors */
+        .btn-edit { background: var(--gold); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-edit:hover { opacity: 0.8; }
+        .btn-delete:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">SmartStudent</div>
+        <div class="sidebar-menu">
+            <a href="admin_dashboard.html">🏠 Home</a>
+            <a href="Student_details.html" class="active">👥 Student Directory</a>
+            <a href="addStudent.html">➕ Add Student</a>
+            <a href="Subjectlist.html">📚 Subject List</a>
+            <a href="addSubject.html">📝 Add Subject</a>
+        </div>
+        <div class="sidebar-footer">
+            <a href="Hero.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <nav class="top-nav">
+            <span style="font-weight: bold; color: var(--teal);">Student Directory</span>
+            <button class="btn" style="background: var(--teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;" onclick="location.href='addStudent.html'">+ Add New Student</button>
+        </nav>
+
+        <div class="content-container">
+            <div class="table-card">
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Reg No</th>
+                            <th>Password</th>
+                            <th>Email</th>
+                            <th>Course</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: var(--teal); margin: 0;">Edit Student Profile</h2>
+                <span onclick="closeModal()" style="cursor:pointer; font-size: 24px;">&times;</span>
+            </div>
+            
+            <input type="hidden" id="editIndex">
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="editEmail">
+            </div>
+            <div class="form-group">
+                <label>Course</label>
+                <input type="text" id="editCourse">
+            </div>
+            <div class="form-group">
+                <label>Access Password</label>
+                <input type="text" id="editPass">
+            </div>
+
+            <div style="margin-top: 30px; display: flex; gap: 10px;">
+                <button class="btn" style="flex: 1; background: var(--gold); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer;" onclick="saveEdit()">Update Changes</button>
+                <button class="btn" style="flex: 1; background: #eee; color: #333; border: none; padding: 12px; border-radius: 6px; cursor: pointer;" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadStudents() {
+            const students = JSON.parse(localStorage.getItem('students') || "[]");
+            const tbody = document.getElementById("studentTableBody");
+            
+            if (students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 40px; color: #888;">No students registered.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = students.map((s, i) => `
+                <tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td><code>${s.regNum}</code></td>
+                    <td style="color: #27ae60; font-weight: bold;">${s.password || s.regNum}</td>
+                    <td>${s.email}</td>
+                    <td>${s.course}</td>
+                    <td>
+                        <button class="btn-edit" onclick="openEditModal(${i})">Edit</button>
+                        <button class="btn-delete" onclick="deleteStudent(${i})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openEditModal(index) {
+            const students = JSON.parse(localStorage.getItem('students'));
+            const s = students[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editName').value = s.name;
+            document.getElementById('editEmail').value = s.email;
+            document.getElementById('editCourse').value = s.course;
+            document.getElementById('editPass').value = s.password || s.regNum;
+            document.getElementById('editModal').style.display = "block";
+        }
+
+        function closeModal() { document.getElementById('editModal').style.display = "none"; }
+
+        function saveEdit() {
+            const index = document.getElementById('editIndex').value;
+            let students = JSON.parse(localStorage.getItem('students'));
+            students[index].name = document.getElementById('editName').value;
+            students[index].email = document.getElementById('editEmail').value;
+            students[index].course = document.getElementById('editCourse').value;
+            students[index].password = document.getElementById('editPass').value;
+
+            localStorage.setItem('students', JSON.stringify(students));
+            closeModal();
+            loadStudents();
+            alert("Record updated successfully.");
+        }
+
+        function deleteStudent(index) {
+            if (confirm("Permanently delete this student?")) {
+                let students = JSON.parse(localStorage.getItem('students'));
+                students.splice(index, 1);
+                localStorage.setItem('students', JSON.stringify(students));
+                loadStudents();
+            }
+        }
+
+        window.onload = loadStudents;
+        window.onclick = function(e) { if (e.target == document.getElementById('editModal')) closeModal(); }
+    </script>
+
+</body>
+</html>

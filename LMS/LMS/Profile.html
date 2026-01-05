@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>My Profile - SmartStudent</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Nav Styling */
+        nav {
+            background-color: var(--teal);
+            padding: 0 30px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+        }
+
+        .profile-card {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        /* Decorative Header */
+        .card-header {
+            background: linear-gradient(135deg, var(--teal), #2c3e50);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            background: var(--gold);
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        /* Detail Rows */
+        .info-grid {
+            margin-bottom: 30px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-label {
+            color: #888;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Password Form Styling */
+        .password-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+
+        .password-section h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: var(--teal);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .btn-update {
+            width: 100%;
+            background: var(--teal);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-update:hover {
+            background: #148f8f;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <span style="font-weight: bold; font-size: 1.2rem;">My Profile</span>
+        <a href="Student_dashboard.html" style="color: white; text-decoration: none; font-size: 0.9rem;">← Dashboard</a>
+    </nav>
+
+    <div class="profile-wrapper">
+        <div class="profile-card">
+            <div class="card-header">
+                <div class="avatar-circle" id="avatarInit">S</div>
+                <h2 id="topName" style="margin: 0;">Student Name</h2>
+                <span id="topReg" style="opacity: 0.8; font-size: 0.9rem;">REG-000000</span>
+            </div>
+
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value" id="profName"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Registration No</span>
+                        <span class="info-value" id="profReg"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email Address</span>
+                        <span class="info-value" id="profEmail"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Enrolled Course</span>
+                        <span class="info-value" id="profCourse"></span>
+                    </div>
+                </div>
+
+                <div class="password-section">
+                    <h3>Security</h3>
+                    <div class="form-group">
+                        <label>New Access Password</label>
+                        <input type="password" id="newPass" placeholder="••••••••">
+                    </div>
+                    <button class="btn-update" onclick="updatePassword()">Update Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load data from current session
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+        if(currentUser) {
+            // Fill Detail Rows
+            document.getElementById('profName').innerText = currentUser.name;
+            document.getElementById('profReg').innerText = currentUser.regNum;
+            document.getElementById('profEmail').innerText = currentUser.email || "Not Provided";
+            document.getElementById('profCourse').innerText = currentUser.course || "General Student";
+
+            // Fill Header Details
+            document.getElementById('topName').innerText = currentUser.name;
+            document.getElementById('topReg').innerText = currentUser.regNum;
+            
+            // Set Avatar Initial
+            document.getElementById('avatarInit').innerText = currentUser.name.charAt(0).toUpperCase();
+        }
+
+        function updatePassword() {
+            const newP = document.getElementById('newPass').value;
+            if(!newP) return alert("Please enter a new password");
+
+            let students = JSON.parse(localStorage.getItem('students') || "[]");
+            
+            // Find student in the master database
+            let index = students.findIndex(s => s.regNum === currentUser.regNum);
+            
+            if(index !== -1) {
+                // 1. Update master list
+                students[index].password = newP;
+                localStorage.setItem('students', JSON.stringify(students));
+                
+                // 2. Update current session
+                currentUser.password = newP;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                alert("Password updated successfully!");
+                document.getElementById('newPass').value = "";
+            } else {
+                alert("Error: Student record not found in database.");
+            }
+        }
+    </script>
+</body>
+</html>

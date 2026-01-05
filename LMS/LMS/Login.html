@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SmartStudent</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-card h2 {
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .login-card p {
+            color: var(--asphalt);
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        /* EYE ICON STYLES */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-container input {
+            width: 100%;
+            padding-right: 40px; /* Space for the icon */
+        }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 1.2rem;
+            color: var(--asphalt);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: var(--teal);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2 id="roleTitle">Login</h2>
+            <p id="roleInstruction">Please enter your credentials below.</p>
+
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Username (Name)" required>
+            </div>
+            
+            <div class="form-group password-container">
+                <input type="password" id="password" placeholder="Password" required>
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
+            </div>
+
+            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleLogin()">
+                Login to Portal
+            </button>
+
+            <a href="Hero.html" class="back-link">← Choose a different role</a>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const role = params.get('role');
+
+        if (role === 'admin') {
+            document.getElementById('roleTitle').innerText = "Admin Login";
+            document.getElementById('roleTitle').style.color = "var(--teal)";
+        } else {
+            document.getElementById('roleTitle').innerText = "Student Login";
+            document.getElementById('roleTitle').style.color = "var(--green)";
+        }
+
+        // --- NEW: Toggle Password Visibility Logic ---
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-password');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.innerText = '🙈'; // Closed eyes icon
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.innerText = '👁️'; // Open eye icon
+            }
+        }
+
+        function handleLogin() {
+            const userInput = document.getElementById('username').value.trim();
+            const passInput = document.getElementById('password').value.trim();
+
+            if (role === 'admin') {
+                if (userInput === 'admin' && passInput === 'admin123') {
+                    window.location.href = 'admin_dashboard.html';
+                } else {
+                    alert("Invalid Admin Username or Password");
+                }
+            } else {
+                const students = JSON.parse(localStorage.getItem('students') || "[]");
+                const foundStudent = students.find(s => 
+                    s.name === userInput && s.password === passInput
+                );
+
+                if (foundStudent) {
+                    localStorage.setItem('currentUser', JSON.stringify(foundStudent));
+                    window.location.href = 'Student_dashboard.html';
+                } else {
+                    alert("Invalid Student Name or Password. \n(Note: Your initial password is your Registration Number)");
+                }
+            }
+        }
+
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    </script>
+</body>
+</html>

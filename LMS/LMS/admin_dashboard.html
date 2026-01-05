@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SmartStudent</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { display: flex; min-height: 100vh; background-color: #f4f7f6; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Sidebar Styles */
+        .sidebar { 
+            width: 240px; 
+            background-color: var(--teal); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            position: fixed;
+            height: 100vh;
+        }
+        .sidebar-header { padding: 25px 20px; font-size: 1.3rem; font-weight: bold; background: rgba(0,0,0,0.1); letter-spacing: 1px; }
+        .sidebar-menu { flex: 1; padding: 15px 0; overflow-y: auto; }
+        .sidebar-menu a { display: block; padding: 12px 20px; color: rgba(255,255,255,0.8); text-decoration: none; transition: 0.3s; font-size: 0.95rem; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.1); color: white; padding-left: 25px; }
+        .sidebar-menu a.active { background: rgba(255,255,255,0.2); color: white; border-left: 4px solid var(--gold); }
+
+        /* MODERN LOGOUT STYLE */
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn { 
+            display: block;
+            padding: 10px; 
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        .logout-btn:hover {
+            background-color: #e74c3c; /* Turns red only on hover */
+            border-color: #e74c3c;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Main Content */
+        .main-content { flex: 1; display: flex; flex-direction: column; margin-left: 240px; }
+        .top-nav { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px; }
+        .dash-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .dash-card h3 { margin-top: 0; color: var(--asphalt); border-bottom: 2px solid #f4f7f6; padding-bottom: 10px; font-size: 1.1rem; }
+
+        /* Timetable Style */
+        .schedule-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .schedule-item:last-child { border: none; }
+        .time-tag { background: #f0f4f4; color: var(--teal); padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+
+        /* Calendar Mockup */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; margin-top: 10px; }
+        .cal-day { padding: 10px; font-size: 0.85rem; border-radius: 5px; color: #555; }
+        .cal-header { font-weight: bold; color: var(--teal); padding-bottom: 5px; }
+        .today { background: var(--gold); color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">SmartStudent</div>
+        
+        <div class="sidebar-menu">
+            <a href="admin_dashboard.html" class="active">🏠 Home</a>
+            <a href="Student_details.html">👥 Student Directory</a>
+            <a href="addStudent.html">➕ Add Student</a>
+            <a href="Subjectlist.html">📚 Subject List</a>
+            <a href="addSubject.html">📝 Add Subject</a>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="Hero.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <nav class="top-nav">
+            <span style="font-weight: bold; color: var(--teal);">Administrator Portal</span>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn" style="padding: 8px 18px; font-size: 0.8rem; border: none; cursor: pointer;" onclick="location.href='addStudent.html'">Quick Add Student</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-grid">
+            
+            <div class="dash-card">
+                <h3>Today's Schedule</h3>
+                <div class="schedule-item">
+                    <span>Advanced Mathematics - Grade 12</span>
+                    <span class="time-tag">08:00 AM</span>
+                </div>
+                <div class="schedule-item">
+                    <span>Physics Lab - Batch A</span>
+                    <span class="time-tag">10:30 AM</span>
+                </div>
+                <div class="schedule-item">
+                    <span>Staff Meeting</span>
+                    <span class="time-tag">01:00 PM</span>
+                </div>
+                <div class="schedule-item">
+                    <span>Information Technology</span>
+                    <span class="time-tag">02:30 PM</span>
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <h3>January 2026</h3>
+                <div class="calendar-grid">
+                    <div class="cal-header">M</div>
+                    <div class="cal-header">T</div>
+                    <div class="cal-header">W</div>
+                    <div class="cal-header">T</div>
+                    <div class="cal-header">F</div>
+                    <div class="cal-header">S</div>
+                    <div class="cal-header">S</div>
+                    
+                    <div class="cal-day"></div><div class="cal-day"></div>
+                    <div class="cal-day today">1</div><div class="cal-day">2</div>
+                    <div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div>
+                    <div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div>
+                    <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div>
+                    <div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div>
+                    <div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div>
+                    <div class="cal-day">18</div>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 15px; color: var(--asphalt); font-style: italic;">● 3 Upcoming Events this month</p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

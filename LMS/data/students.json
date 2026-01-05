@@ -1,0 +1,12 @@
+[
+    {
+        "name": "John Doe",
+        "reg_no": "REG001",
+        "password": "REG001"
+    },
+    {
+        "name": "Jane Smith",
+        "reg_no": "REG002",
+        "password": "REG002"
+    }
+]

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Content - SmartStudent</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Layout Styling */
+        body { display: flex; min-height: 100vh; background-color: #f4f7f6; margin: 0; font-family: sans-serif; }
+        
+        /* Fixed Sidebar Styles */
+        .sidebar { 
+            width: 240px; 
+            background-color: var(--teal); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            position: fixed; 
+            height: 100vh;
+        }
+        .sidebar-header { padding: 20px; font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.1); }
+        .sidebar-menu { flex: 1; padding: 10px 0; }
+        .sidebar-menu a { display: block; padding: 12px 20px; color: white; text-decoration: none; transition: 0.3s; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-menu a.active { background: rgba(255,255,255,0.2); border-left: 4px solid var(--gold); }
+        
+        /* Logout Button Footer */
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn { 
+            display: block;
+            padding: 10px; 
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        /* Main Content area */
+        .main-content { flex: 1; display: flex; flex-direction: column; margin-left: 240px; }
+        .top-nav { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .content-container { padding: 30px; }
+        
+        /* Grid and Cards */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s; border: none; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 160px; object-fit: cover; }
+        .card-body { padding: 20px; }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 5% auto; padding: 30px; width: 90%; max-width: 500px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        
+        /* Input Styling in Modal */
+        .modal-content input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+
+        .admin-note-item { 
+            background: #f9f9f9; 
+            padding: 12px; 
+            margin-bottom: 8px; 
+            border-radius: 6px; 
+            border-left: 4px solid var(--teal);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-upload { background: var(--teal); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-upload:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">SmartStudent</div>
+        <div class="sidebar-menu">
+            <a href="admin_dashboard.html">🏠 Home</a>
+            <a href="Student_details.html">👥 Student Directory</a>
+            <a href="addStudent.html">➕ Add Student</a>
+            <a href="Subjectlist.html" class="active">📚 Subject List</a>
+            <a href="addSubject.html">📝 Add Subject</a>
+        </div>
+        <div class="sidebar-footer">
+            <a href="Hero.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <nav class="top-nav">
+            <span style="font-weight: bold; color: var(--teal);">Content Management</span>
+            <button class="btn" style="background: var(--teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;" onclick="location.href='addSubject.html'">+ Create New Subject</button>
+        </nav>
+
+        <div class="content-container">
+            <h2 style="color: var(--asphalt); margin-bottom: 20px;">Available Subjects</h2>
+            <div id="adminGrid" class="card-grid"></div>
+        </div>
+    </div>
+
+    <div id="manageModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="modalTitle" style="color: var(--teal); margin: 0;"></h2>
+                <span onclick="closeModal()" style="cursor:pointer; font-size: 28px;">&times;</span>
+            </div>
+            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+
+            <div style="background: #f0f4f4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: var(--teal);">Add New PDF Note</h4>
+                <input type="hidden" id="currentSubIndex">
+                <input type="text" id="newTitle" placeholder="Note Title (e.g. Chapter 1)">
+                <input type="text" id="newDesc" placeholder="Brief Description">
+                <input type="file" id="newFile" accept="application/pdf" style="border:none; background:transparent;">
+                <button class="btn-upload" onclick="uploadNote()">Upload to Subject</button>
+            </div>
+
+            <h4 style="color: var(--asphalt);">Current Notes</h4>
+            <div id="modalNotesList" style="max-height: 200px; overflow-y: auto;"></div>
+            
+            <button class="btn" style="width: 100%; margin-top: 20px; background: #eee; color: #333; border: none; padding: 10px; border-radius: 5px; cursor: pointer;" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function renderAdminGrid() {
+            const subs = JSON.parse(localStorage.getItem('subjects') || "[]");
+            const grid = document.getElementById('adminGrid');
+
+            if (subs.length === 0) {
+                grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; padding: 50px;'><p>No subjects have been created yet.</p></div>";
+                return;
+            }
+
+            grid.innerHTML = subs.map((s, i) => `
+                <div class="card">
+                    <img src="${s.img || 'https://via.placeholder.com/300x160'}" alt="subject">
+                    <div class="card-body">
+                        <h3 style="color: var(--teal); margin: 0 0 5px 0;">${s.name}</h3>
+                        <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">${s.notes.length} Note(s) available</p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="btn" style="background: var(--gold); border: none; padding: 10px; color: white; border-radius: 5px; cursor: pointer;" onclick="openManageModal(${i})">Manage Notes</button>
+                            <button style="background:none; border: 1px solid #ff4d4d; color:#ff4d4d; padding:8px; border-radius:5px; cursor:pointer; font-size: 0.8rem;" onclick="deleteSubject(${i})">Delete Subject</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openManageModal(index) {
+            const subs = JSON.parse(localStorage.getItem('subjects'));
+            const s = subs[index];
+            document.getElementById('currentSubIndex').value = index;
+            document.getElementById('modalTitle').innerText = s.name;
+            
+            const listDiv = document.getElementById('modalNotesList');
+            listDiv.innerHTML = s.notes.length === 0 ? "<p style='color:#888; font-size:0.9rem;'>No notes uploaded.</p>" : 
+                s.notes.map((n, ni) => `
+                    <div class="admin-note-item">
+                        <span style="font-size: 0.9rem;"><strong>${n.title}</strong></span>
+                        <button onclick="deleteNote(${index}, ${ni})" style="background:none; border:none; color:#ff4d4d; cursor:pointer; font-weight:bold;">Remove</button>
+                    </div>
+                `).join('');
+
+            document.getElementById('manageModal').style.display = "block";
+        }
+
+        function closeModal() { document.getElementById('manageModal').style.display = "none"; }
+
+        function uploadNote() {
+            const index = document.getElementById('currentSubIndex').value;
+            const title = document.getElementById('newTitle').value;
+            const desc = document.getElementById('newDesc').value;
+            const fileInput = document.getElementById('newFile');
+
+            if (!title || fileInput.files.length === 0) { alert("Title and PDF required!"); return; }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let subs = JSON.parse(localStorage.getItem('subjects'));
+                subs[index].notes.push({ title, desc, file: e.target.result });
+                localStorage.setItem('subjects', JSON.stringify(subs));
+                
+                document.getElementById('newTitle').value = "";
+                document.getElementById('newDesc').value = "";
+                document.getElementById('newFile').value = "";
+                openManageModal(index);
+                renderAdminGrid();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        function deleteNote(subIndex, noteIndex) {
+            if(confirm("Remove this note?")) {
+                let subs = JSON.parse(localStorage.getItem('subjects'));
+                subs[subIndex].notes.splice(noteIndex, 1);
+                localStorage.setItem('subjects', JSON.stringify(subs));
+                openManageModal(subIndex);
+                renderAdminGrid();
+            }
+        }
+
+        function deleteSubject(index) {
+            if (confirm("Delete this entire subject and all its notes?")) {
+                let subs = JSON.parse(localStorage.getItem('subjects'));
+                subs.splice(index, 1);
+                localStorage.setItem('subjects', JSON.stringify(subs));
+                renderAdminGrid();
+            }
+        }
+
+        window.onload = renderAdminGrid;
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('manageModal')) closeModal();
+        }
+    </script>
+</body>
+</html>

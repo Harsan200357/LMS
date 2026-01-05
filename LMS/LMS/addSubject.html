@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Add Subject - SmartStudent</title>
+    <style>
+        /* Layout Styling */
+        body { display: flex; min-height: 100vh; background-color: #f4f7f6; margin: 0; font-family: sans-serif; }
+        
+        /* Sidebar Styles */
+        .sidebar { 
+            width: 240px; 
+            background-color: var(--teal); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            position: fixed; 
+            height: 100vh;
+        }
+        .sidebar-header { padding: 20px; font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.1); }
+        .sidebar-menu { flex: 1; padding: 10px 0; }
+        .sidebar-menu a { display: block; padding: 12px 20px; color: white; text-decoration: none; transition: 0.3s; }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-menu a.active { background: rgba(255,255,255,0.2); border-left: 4px solid var(--gold); }
+        
+        /* Consistent Logout Section */
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn { 
+            display: block;
+            padding: 10px; 
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .logout-btn:hover {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        /* Main Content area */
+        .main-content { flex: 1; display: flex; flex-direction: column; margin-left: 240px; }
+        .top-nav { height: 60px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .content-container { padding: 30px; display: flex; flex-direction: column; align-items: center; }
+        .form-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); width: 100%; max-width: 600px; }
+        
+        .form-group { margin-bottom: 15px; width: 100%; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+
+        .btn-save { background: var(--teal); color: white; border: none; font-weight: bold; width: 100%; padding: 15px; margin-top: 20px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-save:hover { opacity: 0.9; }
+
+        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 4px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; }
+        
+        /* Preview Image Style */
+        #imgPreview { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">SmartStudent</div>
+        <div class="sidebar-menu">
+            <a href="admin_dashboard.html">🏠 Home</a>
+            <a href="Student_details.html">👥 Student Directory</a>
+            <a href="addStudent.html">➕ Add Student</a>
+            <a href="Subjectlist.html">📚 Subject List</a>
+            <a href="addSubject.html" class="active">📝 Add Subject</a>
+        </div>
+        <div class="sidebar-footer">
+            <a href="Hero.html" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <nav class="top-nav">
+            <span style="font-weight: bold; color: var(--teal);">Subject Creation</span>
+            <a href="Subjectlist.html" class="btn" style="background: var(--gold); color: white; font-size: 0.8rem; border: none; padding: 8px 15px; text-decoration: none; border-radius: 4px;">View All Subjects</a>
+        </nav>
+
+        <div class="content-container">
+            <div class="form-card">
+                <h2 style="color: var(--teal); margin-top: 0;">Subject Details</h2>
+                
+                <div class="form-group">
+                    <label>Subject Name</label>
+                    <input id="subName" placeholder="e.g. Mathematics">
+                </div>
+
+                <div class="form-group">
+                    <label>Subject Cover Image (Upload from PC)</label>
+                    <input type="file" id="subImgFile" accept="image/*" onchange="previewImage(this)" style="border: none; padding: 10px 0;">
+                    <img id="imgPreview" alt="Image Preview">
+                </div>
+
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+                
+                <h3 style="color: var(--asphalt); margin-top: 0;">Initial Study Material</h3>
+
+                <div class="form-group">
+                    <label>Note Title</label>
+                    <input id="noteTitle" placeholder="e.g. Chapter 1: Introduction">
+                </div>
+
+                <div class="form-group">
+                    <label>Note Description</label>
+                    <textarea id="noteDesc" placeholder="Briefly describe what this note covers..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload PDF Note</label>
+                    <input type="file" id="pdfFile" accept="application/pdf" style="border: none; padding: 10px 0;">
+                </div>
+
+                <button class="btn btn-save" onclick="addSubject()">Create & Save Subject</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('imgPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function addSubject() {
+            const name = document.getElementById('subName').value;
+            const imgInput = document.getElementById('subImgFile');
+            const noteTitle = document.getElementById('noteTitle').value;
+            const noteDesc = document.getElementById('noteDesc').value;
+            const pdfInput = document.getElementById('pdfFile');
+
+            if (!name || imgInput.files.length === 0) {
+                alert("Subject Name and Cover Image are required!");
+                return;
+            }
+
+            const imgBase64 = await toBase64(imgInput.files[0]);
+
+            let pdfBase64 = null;
+            if (pdfInput.files.length > 0) {
+                pdfBase64 = await toBase64(pdfInput.files[0]);
+            }
+
+            saveToStorage(name, imgBase64, noteTitle, noteDesc, pdfBase64);
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        function saveToStorage(name, imgData, title, desc, pdfData) {
+            let subs = JSON.parse(localStorage.getItem('subjects') || "[]");
+            
+            let newSubject = {
+                name: name,
+                img: imgData,
+                notes: []
+            };
+
+            if (title && pdfData) {
+                newSubject.notes.push({
+                    title: title,
+                    desc: desc,
+                    file: pdfData 
+                });
+            }
+
+            subs.push(newSubject);
+            localStorage.setItem('subjects', JSON.stringify(subs));
+            
+            alert("Subject Created Successfully!");
+            location.href = "Subjectlist.html";
+        }
+    </script>
+</body>
+</html>
